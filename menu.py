@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os
+import os, sys
 
 class Menus():
     """each class instance stores a list of line item descriptions
@@ -33,5 +33,31 @@ class Menus():
         return self.menu_function[selection - 1]
 
 
+def init():
+    """Setup the menus here.  All menu class instances must be created first,
+        then menu items added second.  Each menu item should include the function
+        object (no parentheses) that is called when the menu item is selected.
+        """
+    main_menu = Menus("Main Menu")
+    sub1_menu = Menus("Sub Menu 1")
+    sub1_a_menu = Menus("Sub Menu 1.a")
+    sub1_b_menu = Menus("Sub Menu 1.b")
+    sub2_menu = Menus("Sub Menu 2")
+    sub2_a_menu = Menus("Sub Menu 2.a")
 
+    main_menu.add_item("Open Sub Menu 1", sub1_menu.print)
+    main_menu.add_item("Open Sub Menu 2", sub2_menu.print)
+    main_menu.add_item("Exit", sys.exit)
+
+    sub1_menu.add_item("Open Sub Menu 1.a", sub1_a_menu.print)
+    sub1_menu.add_item("Open Sub Menu 1.b", sub1_b_menu.print)
+    sub1_menu.add_item("Exit", sys.exit)
+
+    sub2_menu.add_item("Open Sub Menu 2.a", sub1_a_menu.print)
+    sub2_menu.add_item("Exit", sys.exit)
+
+
+### Program start
+
+menus = {}
 
