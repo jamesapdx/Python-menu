@@ -1,36 +1,39 @@
 #!/usr/bin/python
 
 import os, sys
-
+if hasattr(__builtins__, "raw_input"):
+    input = raw_input
 class Menus():
     """each class instance stores a list of line item descriptions
         and a list of corresponding functions that the items should run
         """
-    def __init__(self, menu_title, menu_footer):
+    def __init__(self, menu_title, menu_type="menu", menu_footer=None):
         self.menu_title = menu_title
+        self.menu_type = menu_type
         self.menu_footer = menu_footer
         self.menu_items = []
         self.menu_functions = []
 
     def add_item(self, menu_item, menu_function):
-        self.menu_item.append(menu_item)
-        self.menu_function = menu_function.append(menu_function)
+        self.menu_items.append(menu_item)
+        self.menu_functions.append(menu_function)
 
-    def print_menu():
-        os.system("clear")
+    def print_menu(self):
+        while True:
+            os.system("clear")
 
-        print(self.menu_title)
+            print(self.menu_title)
 
-        counter = 0
-        for menu_item in self.menu_items:
-            counter += 1
-            print("   {}  {}".format(counter, menu_item))
+            counter = 0
+            for menu_item in self.menu_items:
+                counter += 1
+                print("   {}  {}".format(counter, menu_item))
 
-        print(self.menu_footer)
+            print(self.menu_footer)
 
-        selection = raw_input("Please select an item: ")
+            selection = int(input("Please select an item: "))
 
-        return self.menu_function[selection - 1]
+            return self.menu_functions[selection - 1]
 
 
 def init():
@@ -45,19 +48,32 @@ def init():
     sub2_menu = Menus("Sub Menu 2")
     sub2_a_menu = Menus("Sub Menu 2.a")
 
-    main_menu.add_item("Open Sub Menu 1", sub1_menu.print)
-    main_menu.add_item("Open Sub Menu 2", sub2_menu.print)
+    main_menu.add_item("Open Sub Menu 1", sub1_menu.print_menu)
+    main_menu.add_item("Open Sub Menu 2", sub2_menu.print_menu)
     main_menu.add_item("Exit", sys.exit)
 
-    sub1_menu.add_item("Open Sub Menu 1.a", sub1_a_menu.print)
-    sub1_menu.add_item("Open Sub Menu 1.b", sub1_b_menu.print)
-    sub1_menu.add_item("Exit", sys.exit)
+    sub1_menu.add_item("Open Sub Menu 1.a", sub1_a_menu.print_menu)
+    sub1_menu.add_item("Open Sub Menu 1.b", sub1_b_menu.print_menu)
+    sub1_menu.add_item("Back", main_menu.print_menu)
 
-    sub2_menu.add_item("Open Sub Menu 2.a", sub1_a_menu.print)
-    sub2_menu.add_item("Exit", sys.exit)
+    sub1_a_menu.add_item("Back", sub1_menu.print_menu)
+    sub1_b_menu.add_item("Back", sub1_menu.print_menu)
 
+    sub2_menu.add_item("Open Sub Menu 2.a", sub1_a_menu.print_menu)
+    sub2_menu.add_item("Back", main_menu.print_menu)
+
+    sub2_a_menu.add_item("Back", sub2_menu)
+
+    return main_menu.print_menu
 
 ### Program start
 
-menus = {}
+current_menu = init()
+
+while True:
+    choice = current_menu()
+    current_menu = choice if "menu" in str(choice) else current_menu
+    choice()
+
+
 
