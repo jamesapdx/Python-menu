@@ -3,6 +3,7 @@
 import os, sys
 if hasattr(__builtins__, "raw_input"):
     input = raw_input
+
 class Menus():
     """each class instance stores a list of line item descriptions
         and a list of corresponding functions that the items should run
@@ -33,7 +34,7 @@ class Menus():
 
             selection = int(input("Please select an item: "))
 
-            return self.menu_functions[selection - 1]
+            return self.menu_functions[selection - 1], self.menu_type
 
 
 def init():
@@ -54,6 +55,7 @@ def init():
 
     sub1_menu.add_item("Open Sub Menu 1.a", sub1_a_menu.print_menu)
     sub1_menu.add_item("Open Sub Menu 1.b", sub1_b_menu.print_menu)
+    sub1_menu.add_item("Test Function", test_function)
     sub1_menu.add_item("Back", main_menu.print_menu)
 
     sub1_a_menu.add_item("Back", sub1_menu.print_menu)
@@ -66,14 +68,20 @@ def init():
 
     return main_menu.print_menu
 
+def test_function():
+    print("This is a test function.")
+    x = input("Press enter to continue...")
+
 ### Program start
 
 current_menu = init()
 
 while True:
-    choice = current_menu()
-    current_menu = choice if "menu" in str(choice) else current_menu
-    choice()
+    choice, type = current_menu()
+    if type == "menu":
+        current_menu = choice
+    else:
+        choice()
 
 
 
