@@ -8,16 +8,17 @@ class Menus():
     """each class instance stores a list of line item descriptions
         and a list of corresponding functions that the items should run
         """
-    def __init__(self, menu_title, menu_type="menu", menu_footer=None):
+    def __init__(self, menu_title, menu_footer=None):
         self.menu_title = menu_title
-        self.menu_type = menu_type
         self.menu_footer = menu_footer
         self.menu_items = []
         self.menu_functions = []
+        self.menu_type = []
 
-    def add_item(self, menu_item, menu_function):
+    def add_item(self, menu_item, menu_function, menu_type="menu"):
         self.menu_items.append(menu_item)
         self.menu_functions.append(menu_function)
+        self.menu_type.append(menu_type)
 
     def print_menu(self):
         while True:
@@ -34,7 +35,7 @@ class Menus():
 
             selection = int(input("Please select an item: "))
 
-            return self.menu_functions[selection - 1], self.menu_type
+            return self.menu_functions[selection - 1], self.menu_type[selection - 1]
 
 
 def init():
@@ -55,7 +56,7 @@ def init():
 
     sub1_menu.add_item("Open Sub Menu 1.a", sub1_a_menu.print_menu)
     sub1_menu.add_item("Open Sub Menu 1.b", sub1_b_menu.print_menu)
-    sub1_menu.add_item("Test Function", test_function)
+    sub1_menu.add_item("Test Function", test_function, "function")
     sub1_menu.add_item("Back", main_menu.print_menu)
 
     sub1_a_menu.add_item("Back", sub1_menu.print_menu)
