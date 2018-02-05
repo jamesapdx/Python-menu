@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, sys
+import printformats as pf
 
 # ---allow input to function in 2 & 3
 if hasattr(__builtins__, "raw_input"):
