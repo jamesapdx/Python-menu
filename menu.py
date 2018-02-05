@@ -1,13 +1,22 @@
 #!/usr/bin/python
 
 import os, sys
+
+# ---allow input to function in 2 & 3
 if hasattr(__builtins__, "raw_input"):
     input = raw_input
 
 class Menus():
-    """each class instance stores a list of line item descriptions
-        and a list of corresponding functions that the items should run
-        """
+    """Menu class
+
+    Each Menus class instance stores a list of line item descriptions
+    and a corresponding function object that the menu item should run
+    if it is selected. menu_first_function should be set to the first
+    function to be run.
+    """
+    master_menus = []
+    menu_first_function = None
+
     def __init__(self, menu_title, menu_footer=None):
         self.menu_title = menu_title
         self.menu_footer = menu_footer
@@ -15,7 +24,14 @@ class Menus():
         self.menu_functions = []
         self.menu_type = []
 
+        Menus.master_menus.append(self)
+
     def add_item(self, menu_item, menu_function, menu_type="menu"):
+        """this method will add a single line item to an individual menu.
+        menu_item: will be printed for the user to see
+        menu_function: the function to be run should the menu item be selected
+        menu_type: specifies the type of function, such as another menu or a custom function
+        """
         self.menu_items.append(menu_item)
         self.menu_functions.append(menu_function)
         self.menu_type.append(menu_type)
@@ -31,15 +47,25 @@ class Menus():
                 counter += 1
                 print("   {}  {}".format(counter, menu_item))
 
-            print(self.menu_footer)
+            if self.menu_footer:
+                print(self.menu_footer)
 
-            selection = int(input("Please select an item: "))
+            try:
+                selection = int(input("Please select an item: "))
 
-            return self.menu_functions[selection - 1], self.menu_type[selection - 1]
+            except ValueError:
+                input("\nPlease enter a selection, [1 - {0}]".format(counter+1) )
+            else:
+                return self.menu_functions[selection - 1], self.menu_type[selection - 1]
 
+def save_menus():
+    pass
 
-def init():
-    """Setup the menus here.  All menu class instances must be created first,
+def load_menus():
+    pass
+
+def my_menu():
+    """Setup an example menu.  All menu class instances must be created first,
         then menu items added second.  Each menu item should include the function
         object (no parentheses) that is called when the menu item is selected.
         """
@@ -49,6 +75,8 @@ def init():
     sub1_b_menu = Menus("Sub Menu 1.b")
     sub2_menu = Menus("Sub Menu 2")
     sub2_a_menu = Menus("Sub Menu 2.a")
+
+    Menus.menu_first_function = main_menu.print_menu
 
     main_menu.add_item("Open Sub Menu 1", sub1_menu.print_menu)
     main_menu.add_item("Open Sub Menu 2", sub2_menu.print_menu)
@@ -67,7 +95,7 @@ def init():
 
     sub2_a_menu.add_item("Back", sub2_menu)
 
-    return main_menu.print_menu
+    return
 
 def test_function():
     print("This is a test function.")
@@ -75,14 +103,25 @@ def test_function():
 
 ### Program start
 
-current_menu = init()
+if __name__ == "__main__":
 
-while True:
-    choice, type = current_menu()
-    if type == "menu":
-        current_menu = choice
-    else:
-        choice()
+    my_menu()
+
+    current_menu = Menus.menu_first_function
+
+    while True:
+        try:
+            choice, type = current_menu()
+        except TypeError:
+            print("Menu handling error. Probably forgot to set type='function',"
+                "please check your menu setup.")
+            print("Function: {0}".format(str(current_menu)))
+            sys.exit()
+
+        if type == "menu":
+            current_menu = choice
+        else:
+            choice()
 
 
 
