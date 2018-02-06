@@ -11,8 +11,10 @@ print_formats = {
     'reverse' : '\033[07m',
     'strikethrough' : '\033[09m',
     'invisible' : '\033[08m',
+    'italic' : '\33[3m',
     'line' : '=',
     'space' : ' ',
+    'default' : '',
 
     'black' : '\033[30m',
     'red' : '\033[31m',
