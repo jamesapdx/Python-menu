@@ -19,43 +19,65 @@ class Menus():
     menus_first_function = None
     menus_note = None
 
-    def __init__(self, title=None, title_color="green", title_bold="bold", footer=None, footer_color="green",
-                 footer_bold="bold"):
+    def __init__(self, title=None, title_formatting="{GREEN_FG}", footer=None, footer_formatting="{GREEN_FG}"):
+
         self.menu_title = title
-        self.menu_title_color = title_color
-        self.menu_title_bold = title_bold
+        self.menu_title_formatting = title_formatting.format(**pf.print_formats)
+
         self.menu_footer = footer
-        self.menu_footer_color = footer_color
-        self.menu_footer_bold = footer_bold
-        self.menu_items_text = []
-        self.menu_items_function = []
-        self.menu_items_type = []
-        self.menu_items_indent = []
-        self.menu_items_color = []
-        self.menu_items_bold = []
-        self.menu_items_italic = []
+        self.menu_footer_formatting = footer_formatting.format(**pf.print_formats)
+
+        self.line_items_text = []
+        self.line_items_function = []
+        self.line_items_active = []
+        self.line_items_type = []
+        self.line_items_indent = []
+        self.line_items_formatting = []
+        self.line_items_been_used = []
+        self.line_items_mark_as_done = []
 
         Menus.master_menus.append(self)
         if not Menus.menus_first_function:
             Menus.menus_first_function = self.print_menu
 
-    def add_item(self, item_text, item_function, item_type="menu", item_indent=4, item_color="default",
-                 item_bold="default", item_italic="default"):
+    def add_line_item(self, item_text, item_function, item_type="menu", item_indent=4, item_formatting="{DEFAULT}",
+                 item_mark_as_done="{SPACE}"):
         """this method will add a single line item to an individual menu.
         menu_item: will be printed for the user to see
         menu_function: the function to be run should the menu item be selected
         menu_items_type: specifies the type of function, such as another menu or a custom function
         """
-        self.menu_items_text.append(item_text)
-        self.menu_items_function.append(item_function)
-        self.menu_items_type.append(item_type)
+        self.line_items_text.append(item_text)
+        self.line_items_function.append(item_function)
+        self.line_items_type.append(item_type)
+        self.line_items_active.append(True)
 
-        #assert here indent, bold, italic correct
+        self.line_items_indent.append(item_indent * pf.print_formats["space"])
+        self.line_items_formatting.append(item_formatting.format(**pf.print_formats))
+        self.line_items_been_used.append(False)
+        self.line_items_mark_as_done.append(item_mark_as_done.format(**pf.print_formats))
 
-        self.menu_items_indent.append(item_indent * pf.print_formats["space"])
-        self.menu_items_color.append(item_color)
-        self.menu_items_bold.append(item_bold)
-        self.menu_items_italic.append(item_italic)
+    def modify_line_item(self, item_number, item_text=None, item_function=None, item_type=None, item_indent=None,
+                    item_formatting=None, item_mark_as_done=None):
+        if item_text is not None:
+            self.line_items_text[item_number] = item_text
+        if item_function is not None:
+            self.line_items_function[item_number] = item_function
+        if item_type is not None:
+            self.line_items_type[item_number] = item_type
+        if item_indent is not None:
+            self.line_items_indent[item_number] = item_indent * pf.print_formats["space"]
+        if item_formatting is not None:
+            self.line_items_formatting[item_number] = item_formatting.format(**pf.print_formats)
+        if item_mark_as_done is not None:
+            self.line_items_mark_as_done[item_number] = item_mark_as_done.format(**pf.print_formats)
+
+    def disable_line_item(self, item_number):
+        self.line_items_active[item_number] = False
+
+    def delete_line_item(self, item_number):
+        pass
+
 
     def print_menu(self):
         while True:
@@ -64,15 +86,14 @@ class Menus():
             print(self.menu_title)
 
             counter = 0
-            for menu_item in self.menu_items_text:
+            for line_item in self.line_items_text:
                 counter += 1
                 s = "{0}{1}  {{2}}{{3}}{{4}}{5}".format(
-                                  self.menu_items_indent,
+                                  self.line_items_indent,
+                                  self.line_items_formatting
                                   counter, #FIX format fixed width
-                                  self.menu_items_color,
-                                  self.menu_items_bold,
-                                  self.menu_items_italic,
-                                  self.menu_items_text,
+                                  self.line_items_mark_as_done
+                                  self.line_items_text,
                                   )
                 print(s.format(**pf.print_formats))
 
@@ -88,7 +109,7 @@ class Menus():
             except ValueError:
                 input("\nPlease enter a selection, [1 - {0}]".format(counter+1) )
             else:
-                return self.menu_functions[selection - 1], self.menu_items_type[selection - 1]
+                return self.line_items_function[selection - 1], self.line_items_type[selection - 1]
 
 def save_menus():
     pass
@@ -110,22 +131,22 @@ def my_menu():
 
     Menus.menus_first_function = main_menu.print_menu
 
-    main_menu.add_item("Open Sub Menu 1", sub1_menu.print_menu)
-    main_menu.add_item("Open Sub Menu 2", sub2_menu.print_menu)
-    main_menu.add_item("Exit", sys.exit)
+    main_menu.add_line_item("Open Sub Menu 1", sub1_menu.print_menu)
+    main_menu.add_line_item("Open Sub Menu 2", sub2_menu.print_menu)
+    main_menu.add_line_item("Exit", sys.exit)
 
-    sub1_menu.add_item("Open Sub Menu 1.a", sub1_a_menu.print_menu)
-    sub1_menu.add_item("Open Sub Menu 1.b", sub1_b_menu.print_menu)
-    sub1_menu.add_item("Test Function", test_function, "function")
-    sub1_menu.add_item("Back", main_menu.print_menu)
+    sub1_menu.add_line_item("Open Sub Menu 1.a", sub1_a_menu.print_menu)
+    sub1_menu.add_line_item("Open Sub Menu 1.b", sub1_b_menu.print_menu)
+    sub1_menu.add_line_item("Test Function", test_function, "function")
+    sub1_menu.add_line_item("Back", main_menu.print_menu)
 
-    sub1_a_menu.add_item("Back", sub1_menu.print_menu)
-    sub1_b_menu.add_item("Back", sub1_menu.print_menu)
+    sub1_a_menu.add_line_item("Back", sub1_menu.print_menu)
+    sub1_b_menu.add_line_item("Back", sub1_menu.print_menu)
 
-    sub2_menu.add_item("Open Sub Menu 2.a", sub1_a_menu.print_menu)
-    sub2_menu.add_item("Back", main_menu.print_menu)
+    sub2_menu.add_line_item("Open Sub Menu 2.a", sub1_a_menu.print_menu)
+    sub2_menu.add_line_item("Back", main_menu.print_menu)
 
-    sub2_a_menu.add_item("Back", sub2_menu)
+    sub2_a_menu.add_line_item("Back", sub2_menu)
 
     return
 
