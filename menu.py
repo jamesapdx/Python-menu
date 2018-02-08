@@ -52,10 +52,10 @@ class Menus():
         self.line_items_type.append(item_type)
         self.line_items_active.append(True)
 
-        self.line_items_indent.append(item_indent * pf.print_formats["space"])
-        self.line_items_formatting.append(item_formatting.format(**pf.print_formats))
+        self.line_items_indent.append(item_indent)
+        self.line_items_formatting.append(item_formatting)
         self.line_items_been_used.append(False)
-        self.line_items_mark_as_done.append(item_mark_as_done.format(**pf.print_formats))
+        self.line_items_mark_as_done.append(item_mark_as_done)
 
     def modify_line_item(self, item_number, item_text=None, item_function=None, item_type=None, item_indent=None,
                     item_formatting=None, item_mark_as_done=None):
@@ -66,11 +66,11 @@ class Menus():
         if item_type is not None:
             self.line_items_type[item_number] = item_type
         if item_indent is not None:
-            self.line_items_indent[item_number] = item_indent * pf.print_formats["space"]
+            self.line_items_indent[item_number] = item_indent
         if item_formatting is not None:
-            self.line_items_formatting[item_number] = item_formatting.format(**pf.print_formats)
+            self.line_items_formatting[item_number] = item_formatting
         if item_mark_as_done is not None:
-            self.line_items_mark_as_done[item_number] = item_mark_as_done.format(**pf.print_formats)
+            self.line_items_mark_as_done[item_number] = item_mark_as_done
 
     def disable_line_item(self, item_number):
         self.line_items_active[item_number] = False
@@ -83,19 +83,33 @@ class Menus():
         while True:
             os.system("clear")
 
-            print(self.menu_title)
+            title_format = self.menu_title_formatting.format(**pf.print_formats)
+            title_line = 30 * "{LINE}".format(**pf.print_formats)  #FIX
+            print("{0}{1} {2} {1}{RESET}".format(
+                                        title_format,
+                                        title_line,
+                                        self.menu_title,
+                                        **pf.print_formats
+                                        ))
 
-            counter = 0
-            for line_item in self.line_items_text:
-                counter += 1
-                s = "{0}{1}  {{2}}{{3}}{{4}}{5}".format(
-                                  self.line_items_indent,
-                                  self.line_items_formatting
-                                  counter, #FIX format fixed width
-                                  self.line_items_mark_as_done
-                                  self.line_items_text,
-                                  )
-                print(s.format(**pf.print_formats))
+            for counter in range(len(self.line_items_text)):
+                this_line_indent = self.line_items_indent[counter] * "{SPACE}".format(**pf.print_formats)
+                if self.line_items_active[counter] is True:
+                    this_line_format = self.line_items_formatting[counter].format(**pf.print_formats)
+                else:
+                    this_line_format = "{LIGHTGREY_FG}".format(**pf.print_formats)
+                #FIX too confusing, figure out a better way
+                this_mark_as_done = self.line_items_mark_as_done[counter].format(**pf.print_formats)
+                this_line_text = self.line_items_text[counter]
+
+                print("{0}{1} {2} {3}{4}{RESET}".format(
+                                        this_line_indent,
+                                        counter + 1, #FIX format fixed width
+                                        this_mark_as_done,
+                                        this_line_format,
+                                        this_line_text,
+                                        **pf.print_formats
+                                        ))
 
             if Menus.menus_note:
                 print("   {0}".format(Menus.menus_note, **pf.print_formats))
@@ -162,6 +176,7 @@ if __name__ == "__main__":
 
     current_menu = Menus.menus_first_function
 
+    choice, type = current_menu()
     while True:
         try:
             choice, type = current_menu()
