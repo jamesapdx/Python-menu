@@ -4,8 +4,9 @@
 from https://stackoverflow.com/questions/287871/print-in-terminal-with-colors
 """
 
-print_formats = {
+formatting = {
     'RESET' : '\033[0m',
+    'END' : '\033[0m',
     'BOLD' : '\033[01m',
     'UNDERLINE' : '\033[04m',
     'REVERSE' : '\033[07m',
@@ -13,7 +14,8 @@ print_formats = {
     'ITALIC' : '\33[3m',
 
     'LINE' : '=',
-    'SPACE' : ' ',
+    'BLANK' : ' ',
+    'SPACER' : ' ',
     'DEFAULT' : '',
     'MARK' : 'X',
 

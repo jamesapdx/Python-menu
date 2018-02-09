@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import os, sys
-import printformats as pf
+from printformats import formatting
 
 # ---allow input() to function in 2 & 3
 if hasattr(__builtins__, "raw_input"):
@@ -22,10 +22,10 @@ class Menus():
     def __init__(self, title=None, title_formatting="{GREEN_FG}", footer=None, footer_formatting="{GREEN_FG}"):
 
         self.menu_title = title
-        self.menu_title_formatting = title_formatting.format(**pf.print_formats)
+        self.menu_title_formatting = title_formatting.format(**formatting)
 
         self.menu_footer = footer
-        self.menu_footer_formatting = footer_formatting.format(**pf.print_formats)
+        self.menu_footer_formatting = footer_formatting.format(**formatting)
 
         self.line_items_text = []
         self.line_items_function = []
@@ -41,7 +41,7 @@ class Menus():
             Menus.menus_first_function = self.print_menu
 
     def add_line_item(self, item_text, item_function, item_type="menu", item_indent=4, item_formatting="{DEFAULT}",
-                 item_mark_as_done="{SPACE}"):
+                 item_mark_as_done="{BLANK}"):
         """this method will add a single line item to an individual menu.
         menu_item: will be printed for the user to see
         menu_function: the function to be run should the menu item be selected
@@ -83,36 +83,30 @@ class Menus():
         while True:
             os.system("clear")
 
-            title_format = self.menu_title_formatting.format(**pf.print_formats)
-            title_line = 30 * "{LINE}".format(**pf.print_formats)  #FIX
-            print("{0}{1} {2} {1}{RESET}".format(
-                                        title_format,
+            title_line = 30 * "{LINE}"  #FIX
+            print("{0}{1} {2} {1}{END}".format(
+                                        self.menu_title_formatting,
                                         title_line,
                                         self.menu_title,
-                                        **pf.print_formats
-                                        ))
+                                        **formatting
+                                        ).format(**formatting))
 
             for counter in range(len(self.line_items_text)):
-                this_line_indent = self.line_items_indent[counter] * "{SPACE}".format(**pf.print_formats)
                 if self.line_items_active[counter] is True:
-                    this_line_format = self.line_items_formatting[counter].format(**pf.print_formats)
+                    this_line_format = self.line_items_formatting[counter]
                 else:
-                    this_line_format = "{LIGHTGREY_FG}".format(**pf.print_formats)
-                #FIX too confusing, figure out a better way
-                this_mark_as_done = self.line_items_mark_as_done[counter].format(**pf.print_formats)
-                this_line_text = self.line_items_text[counter]
-
-                print("{0}{1} {2} {3}{4}{RESET}".format(
-                                        this_line_indent,
-                                        counter + 1, #FIX format fixed width
-                                        this_mark_as_done,
+                    this_line_format = "{LIGHTGREY_FG}"
+                print("{0}{1} {2} {3}{4}{END}".format(
+                                        self.line_items_indent[counter] * "{SPACER}",
+                                        counter + 1,  #FIX
                                         this_line_format,
-                                        this_line_text,
-                                        **pf.print_formats
-                                        ))
+                                        self.line_items_mark_as_done[counter],
+                                        self.line_items_text[counter],
+                                        **formatting
+                                        ).format(**formatting))
 
             if Menus.menus_note:
-                print("   {0}".format(Menus.menus_note, **pf.print_formats))
+                print("   {0}".format(Menus.menus_note, **formatting))
 
             if self.menu_footer:
                 print(self.menu_footer)
