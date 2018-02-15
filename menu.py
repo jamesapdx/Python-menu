@@ -80,44 +80,64 @@ class Menus():
 
 
     def print_menu(self):
+        os.system("clear")
+
+        line_width = 30  #FIX to percent of screen width
+        title_line = line_width * "{LINE}"
+        footer_line = (line_width + 2 + (len(self.menu_title))) * "{LINE}"
+
+        print("{0}{1} {2} {1}{END}".format(
+                                    self.menu_title_formatting,
+                                    title_line,
+                                    self.menu_title,
+                                    **formatting
+                                    ).format(**formatting))
+
+        for counter in range(len(self.line_items_text)):
+            if self.line_items_active[counter] is True:
+                this_line_format = self.line_items_formatting[counter]
+            else:
+                this_line_format = "{LIGHTGREY_FG}"
+            print("{0}{1!s:2.2} {2} {3}{4}{END}".format(
+                                    self.line_items_indent[counter] * "{SPACER}",
+                                    counter + 1,
+                                    this_line_format,
+                                    self.line_items_mark_as_done[counter],
+                                    self.line_items_text[counter],
+                                    **formatting
+                                    ).format(**formatting))
+
+        if Menus.menus_note:
+            print("{0}{1}".format(
+                                    self.line_items_indent[counter] * "{SPACER}",
+                                    Menus.menus_note,
+                                    **formatting
+                                    ).format(**formatting))
+
+        if self.menu_footer:
+            print("{0}{1}".format(
+                                    self.line_items_indent[counter] * "{SPACER}",
+                                    self.menu_footer,
+                                    **formatting
+                                    ).format(**formatting))
+        return counter
+
+
+    def run_menu(self):
         while True:
-            os.system("clear")
-
-            title_line = 30 * "{LINE}"  #FIX
-            print("{0}{1} {2} {1}{END}".format(
-                                        self.menu_title_formatting,
-                                        title_line,
-                                        self.menu_title,
-                                        **formatting
-                                        ).format(**formatting))
-
-            for counter in range(len(self.line_items_text)):
-                if self.line_items_active[counter] is True:
-                    this_line_format = self.line_items_formatting[counter]
-                else:
-                    this_line_format = "{LIGHTGREY_FG}"
-                print("{0}{1} {2} {3}{4}{END}".format(
-                                        self.line_items_indent[counter] * "{SPACER}",
-                                        counter + 1,  #FIX
-                                        this_line_format,
-                                        self.line_items_mark_as_done[counter],
-                                        self.line_items_text[counter],
-                                        **formatting
-                                        ).format(**formatting))
-
-            if Menus.menus_note:
-                print("   {0}".format(Menus.menus_note, **formatting))
-
-            if self.menu_footer:
-                print(self.menu_footer)
+            counter = self.print_menu()
 
             try:
-                selection = int(input("Please select an item: "))
+                print()
+                selection = int(input("Please enter a selection, [1 - {0}]".format(counter+1) ))
 
             except ValueError:
-                input("\nPlease enter a selection, [1 - {0}]".format(counter+1) )
+                pass
+                input("Please enter a selection, [1 - {0}]".format(counter+1) )
             else:
                 return self.line_items_function[selection - 1], self.line_items_type[selection - 1]
+
+
 
 def save_menus():
     pass
@@ -137,22 +157,22 @@ def my_menu():
     sub2_menu = Menus("Sub Menu 2")
     sub2_a_menu = Menus("Sub Menu 2.a")
 
-    Menus.menus_first_function = main_menu.print_menu
+    Menus.menus_first_function = main_menu.run_menu
 
-    main_menu.add_line_item("Open Sub Menu 1", sub1_menu.print_menu)
-    main_menu.add_line_item("Open Sub Menu 2", sub2_menu.print_menu)
+    main_menu.add_line_item("Open Sub Menu 1", sub1_menu.run_menu)
+    main_menu.add_line_item("Open Sub Menu 2", sub2_menu.run_menu)
     main_menu.add_line_item("Exit", sys.exit)
 
-    sub1_menu.add_line_item("Open Sub Menu 1.a", sub1_a_menu.print_menu)
-    sub1_menu.add_line_item("Open Sub Menu 1.b", sub1_b_menu.print_menu)
+    sub1_menu.add_line_item("Open Sub Menu 1.a", sub1_a_menu.run_menu)
+    sub1_menu.add_line_item("Open Sub Menu 1.b", sub1_b_menu.run_menu)
     sub1_menu.add_line_item("Test Function", test_function, "function")
-    sub1_menu.add_line_item("Back", main_menu.print_menu)
+    sub1_menu.add_line_item("Back", main_menu.run_menu)
 
-    sub1_a_menu.add_line_item("Back", sub1_menu.print_menu)
-    sub1_b_menu.add_line_item("Back", sub1_menu.print_menu)
+    sub1_a_menu.add_line_item("Back", sub1_menu.run_menu)
+    sub1_b_menu.add_line_item("Back", sub1_menu.run_menu)
 
-    sub2_menu.add_line_item("Open Sub Menu 2.a", sub1_a_menu.print_menu)
-    sub2_menu.add_line_item("Back", main_menu.print_menu)
+    sub2_menu.add_line_item("Open Sub Menu 2.a", sub1_a_menu.run_menu)
+    sub2_menu.add_line_item("Back", main_menu.run_menu)
 
     sub2_a_menu.add_line_item("Back", sub2_menu)
 
@@ -170,7 +190,6 @@ if __name__ == "__main__":
 
     current_menu = Menus.menus_first_function
 
-    choice, type = current_menu()
     while True:
         try:
             choice, type = current_menu()
