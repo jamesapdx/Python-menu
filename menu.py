@@ -84,9 +84,9 @@ class Menus():
 
         line_width = 30  #FIX to percent of screen width
         title_line = line_width * "{LINE}"
-        footer_line = (line_width + 2 + (len(self.menu_title))) * "{LINE}"
+        footer_line = (line_width * 2 + (len(self.menu_title + "  "))) * "{LINE}"
 
-        print("{0}{1} {2} {1}{END}".format(
+        print("{0}{1} {2} {1}{END}\n".format(
                                     self.menu_title_formatting,
                                     title_line,
                                     self.menu_title,
@@ -120,6 +120,13 @@ class Menus():
                                     self.menu_footer,
                                     **formatting
                                     ).format(**formatting))
+
+        print("\n{0}{1}{END}".format(
+                                    self.menu_title_formatting,
+                                    footer_line,
+                                    **formatting
+                                    ).format(**formatting))
+
         return counter
 
 
@@ -127,13 +134,17 @@ class Menus():
         while True:
             counter = self.print_menu()
 
+            print("\n{0}Please enter a selection, [1 - {1}]".format(
+                                    self.line_items_indent[counter] * "{SPACER}",
+                                    counter + 1,
+                                    **formatting
+                                    ).format(**formatting))
             try:
-                print()
-                selection = int(input("Please enter a selection, [1 - {0}]".format(counter+1) ))
+                selection = int(input())  #Fix
 
             except ValueError:
                 pass
-                input("Please enter a selection, [1 - {0}]".format(counter+1) )
+                #Fix
             else:
                 return self.line_items_function[selection - 1], self.line_items_type[selection - 1]
 
