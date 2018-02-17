@@ -76,8 +76,9 @@ class Menus():
         self.line_items_active[item_number] = False
 
     def delete_line_item(self, item_number):
-        pass
-
+        for variable_name in vars(self):
+            if variable_name.startswith("line_item"):
+                eval("self.{0}.remove({1})".format(variable_name, item_number))
 
     def print_menu(self):
         os.system("clear")
@@ -147,7 +148,6 @@ class Menus():
                 #Fix
             else:
                 return self.line_items_function[selection - 1], self.line_items_type[selection - 1]
-
 
 
 def save_menus():
